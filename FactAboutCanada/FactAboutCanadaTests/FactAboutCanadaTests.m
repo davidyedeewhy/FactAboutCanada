@@ -24,16 +24,28 @@
     [super tearDown];
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
+- (void)testWebRequest {
+    
+    NSString * connection = @"https://dl.dropboxusercontent.com/u/746330/facts.json";
+    NSURL * url = [NSURL URLWithString:connection];
+    NSURLRequest * request = [NSURLRequest requestWithURL:url];
+    
+    XCTestExpectation * expectations = [self expectationWithDescription:@"expectations"];
+    
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSError * jsonError;
+        NSString * resultString = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];
+        NSData * encodingData = [resultString dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary * dictionary = [NSJSONSerialization JSONObjectWithData:encodingData options:NSJSONReadingMutableLeaves error:&jsonError];
+        NSLog(@"%@", dictionary);
+        
+        [expectations fulfill];
+    }] resume];
+    
+    [self waitForExpectationsWithTimeout:30.0 handler:^(NSError * _Nullable error) {
+        
     }];
+    
 }
 
 @end
