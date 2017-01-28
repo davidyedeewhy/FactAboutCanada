@@ -7,6 +7,7 @@
 //
 
 #import "WebserviceClient.h"
+#import "Fact.h"
 
 @implementation WebserviceClient
 
@@ -39,4 +40,13 @@
     }] resume];
 }
 
+-(void)callOperation : (id)object{
+    if ([object isKindOfClass:[Fact class]]){
+        Fact * fact = (Fact *)object;
+        
+        [self requestImageWithConnection:fact.imageHref completionHandler:^(NSData *image) {
+            fact.image = image;
+        }];
+    }
+}
 @end

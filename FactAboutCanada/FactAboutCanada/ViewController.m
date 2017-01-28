@@ -15,6 +15,7 @@
 @interface ViewController ()
 
 @property (nonatomic, strong) NSMutableArray * facts;
+@property (nonatomic, strong) NSOperationQueue * operationQueue;
 
 @end
 
@@ -28,6 +29,8 @@
     
     // initialize array
     _facts = [[NSMutableArray alloc] init];
+    
+    self.operationQueue = [[NSOperationQueue alloc]init];
     
     // make request when view did load
     [self requestWebservice];
@@ -82,20 +85,29 @@
     if(fact.image){
         cell.imageView.image = [UIImage imageWithData:fact.image];
     }else if(fact.imageHref){
-        WebserviceClient * client = [[WebserviceClient alloc]init];
-        [client requestImageWithConnection:fact.imageHref completionHandler:^(NSData *image) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul), ^{
-                fact.image = image;
-                dispatch_async(dispatch_get_main_queue(), ^(void){
-                    UITableViewCell * _cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                    _cell.imageView.image = [UIImage imageWithData:image];
-                    [_cell.imageView setNeedsDisplay];
-                });
-            });
-        }];
+        NSOperation * operation = [[NSInvocationOperation alloc]initWithTarget:fact selector:@selector(requestImage) object:nil];
+        [self.operationQueue addOperation:operation];
+        [fact addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionNew context:nil];
     }
-    
+
     return cell;
+}
+
+- (void) observeValueForKeyPath:(NSString *)path ofObject:(id) object change:(NSDictionary *) change context:(void *)context{
+
+    if ([object isMemberOfClass:[Fact class]] && [path isEqualToString:@"image"]){
+        Fact * fact = (Fact *)object;
+        NSUInteger row = [self.facts indexOfObject:fact];
+        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        UITableViewCell * cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        
+        if(cell){
+            dispatch_async(dispatch_get_main_queue(), ^(void){
+                cell.imageView.image = [UIImage imageWithData:fact.image];
+                [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            });
+        }
+    }
 }
 
 @end

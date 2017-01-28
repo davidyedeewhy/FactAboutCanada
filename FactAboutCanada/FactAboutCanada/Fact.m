@@ -31,6 +31,22 @@
     return self;
 }
 
+-(void)requestImage{
+    NSURL * url = [NSURL URLWithString:self.imageHref];
+    NSURLRequest * request = [NSURLRequest requestWithURL:url];
+    
+    [[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if(response && !error){
+            NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
+            if(httpResponse.statusCode == 200){
+                if(location){
+                    self.image = [[NSData alloc]initWithContentsOfURL:location];
+                }
+            }
+        }
+    }] resume];
+}
+
 -(BOOL)isEqual:(id)object{
     if([object isKindOfClass:[self class]]){
         Fact * obj = (Fact *)object;

@@ -14,4 +14,6 @@
 
 -(void)requestImageWithConnection : (NSString *)connection completionHandler:(void (^)(NSData * image))completionHandler;
 
+-(void)callOperation : (id)object;
+
 @end

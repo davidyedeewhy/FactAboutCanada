@@ -18,4 +18,6 @@
 @property (nonatomic, strong) NSString * imageHref;
 @property (nonatomic, strong) NSData * image;
 
+-(void)requestImage;
+
 @end
