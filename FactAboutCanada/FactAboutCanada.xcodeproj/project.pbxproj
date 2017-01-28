@@ -14,6 +14,8 @@
 		7BA27E421E3C2815009BB75B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BA27E401E3C2815009BB75B /* LaunchScreen.storyboard */; };
 		7BA27E4D1E3C2815009BB75B /* FactAboutCanadaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E4C1E3C2815009BB75B /* FactAboutCanadaTests.m */; };
 		7BA27E581E3C2815009BB75B /* FactAboutCanadaUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E571E3C2815009BB75B /* FactAboutCanadaUITests.m */; };
+		7BA27E6A1E3C37E8009BB75B /* Fact.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E691E3C37E8009BB75B /* Fact.m */; };
+		7BA27E6D1E3C3B9D009BB75B /* WebserviceClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BA27E6C1E3C3B9D009BB75B /* WebserviceClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,10 @@
 		7BA27E531E3C2815009BB75B /* FactAboutCanadaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FactAboutCanadaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA27E571E3C2815009BB75B /* FactAboutCanadaUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FactAboutCanadaUITests.m; sourceTree = "<group>"; };
 		7BA27E591E3C2815009BB75B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BA27E681E3C37E8009BB75B /* Fact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fact.h; sourceTree = "<group>"; };
+		7BA27E691E3C37E8009BB75B /* Fact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Fact.m; sourceTree = "<group>"; };
+		7BA27E6B1E3C3B9D009BB75B /* WebserviceClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebserviceClient.h; sourceTree = "<group>"; };
+		7BA27E6C1E3C3B9D009BB75B /* WebserviceClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebserviceClient.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,9 +105,9 @@
 		7BA27E311E3C2815009BB75B /* FactAboutCanada */ = {
 			isa = PBXGroup;
 			children = (
-				7BA27E671E3C30C3009BB75B /* Controllers */,
-				7BA27E661E3C30B9009BB75B /* Views */,
 				7BA27E651E3C30AF009BB75B /* Models */,
+				7BA27E661E3C30B9009BB75B /* Views */,
+				7BA27E671E3C30C3009BB75B /* Controllers */,
 				7BA27E351E3C2815009BB75B /* AppDelegate.h */,
 				7BA27E361E3C2815009BB75B /* AppDelegate.m */,
 				7BA27E3E1E3C2815009BB75B /* Assets.xcassets */,
@@ -141,6 +147,10 @@
 		7BA27E651E3C30AF009BB75B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				7BA27E681E3C37E8009BB75B /* Fact.h */,
+				7BA27E691E3C37E8009BB75B /* Fact.m */,
+				7BA27E6B1E3C3B9D009BB75B /* WebserviceClient.h */,
+				7BA27E6C1E3C3B9D009BB75B /* WebserviceClient.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -297,8 +307,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BA27E3A1E3C2815009BB75B /* ViewController.m in Sources */,
+				7BA27E6D1E3C3B9D009BB75B /* WebserviceClient.m in Sources */,
 				7BA27E371E3C2815009BB75B /* AppDelegate.m in Sources */,
 				7BA27E341E3C2815009BB75B /* main.m in Sources */,
+				7BA27E6A1E3C37E8009BB75B /* Fact.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
