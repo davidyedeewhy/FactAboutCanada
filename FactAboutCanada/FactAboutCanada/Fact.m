@@ -32,9 +32,9 @@
 }
 
 -(BOOL)isEqual:(id)object{
-    if([object isMemberOfClass:[Fact class]]){
+    if([object isKindOfClass:[self class]]){
         Fact * obj = (Fact *)object;
-        return obj.title == self.title;
+        return [obj.title isEqual:self.title];
     }
     return NO;
 }

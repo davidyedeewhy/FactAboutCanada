@@ -31,6 +31,10 @@
     
     // make request when view did load
     [self requestWebservice];
+    
+    // add refresh control
+    self.refreshControl = [[UIRefreshControl alloc]init];
+    [self.refreshControl addTarget:self action:@selector(requestWebservice) forControlEvents:UIControlEventValueChanged];
 }
 
 -(void)requestWebservice{
@@ -45,13 +49,15 @@
                 for(NSDictionary * dictionary in (NSArray *)[result valueForKey:@"rows"]){
                     if([dictionary valueForKey:@"title"] != [NSNull null]){
                         Fact * fact = [[Fact alloc] initWithDictionary:dictionary];
-                        if(![self.facts containsObject:fact]){
+                        if([self.facts containsObject:fact] == NO){
                             [self.facts addObject:fact];
                         }
                     }
                 }
-                [self.tableView reloadData];
             }
+            
+            [self.tableView reloadData];
+            [self.refreshControl endRefreshing];
         });
     }];
 }
