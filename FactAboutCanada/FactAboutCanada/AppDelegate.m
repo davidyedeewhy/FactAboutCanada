@@ -15,7 +15,7 @@
 
 @implementation AppDelegate
 
-
+#pragma mark - UIApplication delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     // initalize window

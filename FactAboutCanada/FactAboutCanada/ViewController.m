@@ -48,22 +48,39 @@
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             if([result valueForKey:@"title"]){
+                //update navigation item title with response
                 self.navigationItem.title = [NSString stringWithFormat:@"%@", [result valueForKey:@"title"]];
             }
             
             if([result valueForKey:@"rows"]){
+                // 1. create objects based on responsed array
                 for(NSDictionary * dictionary in (NSArray *)[result valueForKey:@"rows"]){
                     if([dictionary valueForKey:@"title"] != [NSNull null]){
                         Fact * fact = [[Fact alloc] initWithDictionary:dictionary];
+                    
                         if([self.facts containsObject:fact] == NO){
+                            // 2. if array doesn't contains the object, add object to array
                             [self.facts addObject:fact];
+                        }else{
+                            // 3. else if object exists in array, update object if it has new content or image url
+                            [self.facts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                if([[obj valueForKey:@"title"] isEqualToString:[dictionary valueForKey:@"title"]]){
+                                    Fact * existObject = (Fact *)obj;
+                                    [existObject updateFactWithDictionary:dictionary];
+                                    *stop = YES;
+                                }
+                            }];
                         }
                     }
                 }
             }
             
+            // 4. when finish loading, update tableview with array
             [self.tableView reloadData];
-            [self.refreshControl endRefreshing];
+            // 5. end refresh control
+            if(self.refreshControl.isRefreshing){
+                [self.refreshControl endRefreshing];
+            }
         });
     }];
 }
@@ -168,20 +185,23 @@
     
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.text = fact.title;
+    
     if(fact.content){
         cell.detailTextLabel.numberOfLines = 0;
         cell.detailTextLabel.text = fact.content;
     }
     
     if(fact.image){
+        // draw image in certain frame
         UIImage * image = [UIImage imageWithData:fact.image];
-        //CGFloat width = [UIScreen mainScreen].bounds.size.width;
         CGFloat imageWidth = 0;
         CGFloat imageHeight = 0;
         if (image.size.width > cell.contentView.frame.size.width * MAX_IMAGE_WIDTH){
+            // if image's width is great than certain width, shrink it to max width
             imageWidth = cell.contentView.frame.size.width * MAX_IMAGE_WIDTH;
             imageHeight = (image.size.height * cell.contentView.frame.size.width * MAX_IMAGE_WIDTH) / image.size.width;
         }else{
+            // else keep image's original size
             imageWidth = image.size.width;
             imageHeight = image.size.height;
         }
@@ -196,6 +216,7 @@
             [fact addObserver:self forKeyPath:@"image"
                       options:NSKeyValueObservingOptionNew
                       context:nil];
+            // request image with object's image url
             [fact requestImage];
         }];
     }
@@ -221,6 +242,7 @@
                 //display image with animations
                 cell.imageView.image = [UIImage imageWithData:fact.image];
                 if([self.tableView.visibleCells containsObject:cell]){
+                    // if cell's visible, reload the cell with image
                     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                                           withRowAnimation:UITableViewRowAnimationFade];
                 }

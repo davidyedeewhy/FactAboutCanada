@@ -11,6 +11,7 @@
 
 @implementation WebserviceClient
 
+#pragma mark - request json objects
 -(void)requestWithConnection:(NSString *)connection
            completionHandler:(void (^)(NSDictionary *))completionHandler{
     NSURL * url = [NSURL URLWithString:connection];

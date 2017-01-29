@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSString * imageHref;
 @property (nonatomic, strong) NSData * image;
 
+-(void)updateFactWithDictionary : (NSDictionary *)dictionary;
 -(void)requestImage;
 
 @end

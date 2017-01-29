@@ -29,6 +29,17 @@
     return self;
 }
 
+#pragma mark - update object's content and imageHref
+-(void)updateFactWithDictionary:(NSDictionary *)dictionary{
+    if([dictionary valueForKey:@"description"] != [NSNull null] && ![self.content isEqualToString:[dictionary valueForKey:@"description"]]){
+        self.content = [NSString stringWithFormat:@"%@", [dictionary valueForKey:@"description"]];
+    }
+    
+    if([dictionary valueForKey:@"imageHref"] != [NSNull null] && ![self.imageHref isEqualToString:[dictionary valueForKey:@"imageHref"]]){
+        self.imageHref = [NSString stringWithFormat:@"%@", [dictionary valueForKey:@"imageHref"]];
+    }
+}
+
 #pragma mark - if self has imageHref, request image with imageHref
 -(void)requestImage{
     NSURL * url = [NSURL URLWithString:self.imageHref];
@@ -44,6 +55,7 @@
             NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
             if(httpResponse.statusCode == 200){
                 if(location){
+                    // 2. set object's image
                     self.image = [[NSData alloc]initWithContentsOfURL:location];
                 }
             }
