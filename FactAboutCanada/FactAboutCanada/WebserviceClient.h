@@ -10,10 +10,7 @@
 
 @interface WebserviceClient : NSObject
 
--(void)requestWithConnection : (NSString *)connection completionHandler:(void (^)(NSDictionary * result))completionHandler;
-
--(void)requestImageWithConnection : (NSString *)connection completionHandler:(void (^)(NSData * image))completionHandler;
-
--(void)callOperation : (id)object;
+-(void)requestWithConnection : (NSString *)connection
+            completionHandler:(void (^)(NSDictionary * result))completionHandler;
 
 @end

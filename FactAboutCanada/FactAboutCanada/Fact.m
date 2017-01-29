@@ -9,10 +9,8 @@
 #import "Fact.h"
 
 @implementation Fact
-@synthesize title;
-@synthesize content;
-@synthesize imageHref;
 
+#pragma mark - init object with dictionary
 -(id)initWithDictionary:(NSDictionary *)dictionary{
     self = [super init];
     if (self) {
@@ -31,11 +29,17 @@
     return self;
 }
 
+#pragma mark - if self has imageHref, request image with imageHref
 -(void)requestImage{
     NSURL * url = [NSURL URLWithString:self.imageHref];
-    NSURLRequest * request = [NSURLRequest requestWithURL:url];
+    NSURLRequest * request = [NSURLRequest requestWithURL:url
+                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                          timeoutInterval:30];
     
-    [[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSURLSessionTask * task = [[NSURLSession sharedSession] downloadTaskWithRequest:request
+                                                                  completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error)
+    {
+        // 1. check if response has error
         if(response && !error){
             NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
             if(httpResponse.statusCode == 200){
@@ -44,9 +48,12 @@
                 }
             }
         }
-    }] resume];
+    }];
+    
+    [task resume];
 }
 
+#pragma mark - override NSObject function 'isEqual' to check if object has identical title
 -(BOOL)isEqual:(id)object{
     if([object isKindOfClass:[self class]]){
         Fact * obj = (Fact *)object;
