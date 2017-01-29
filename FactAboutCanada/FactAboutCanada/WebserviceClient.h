@@ -10,7 +10,11 @@
 
 @interface WebserviceClient : NSObject
 
--(void)requestWithConnection : (NSString *)connection
+// request json objects with the connection and handle the json objects in block
+- (void)requestWithConnection : (NSString *)connection
             completionHandler:(void (^)(NSDictionary * result))completionHandler;
+
+// request image for object with image url
+- (void)requestImageWithObject : (id)object;
 
 @end

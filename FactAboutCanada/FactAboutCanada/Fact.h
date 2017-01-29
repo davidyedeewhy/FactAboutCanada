@@ -11,14 +11,15 @@
 
 @interface Fact : NSObject
 
--(id)initWithDictionary : (NSDictionary *)dictionary;
+// initalize object with dictionary
+- (instancetype)initWithDictionary : (NSDictionary *)dictionary;
 
-@property (nonatomic, strong) NSString * title;
-@property (nonatomic, strong) NSString * content;
-@property (nonatomic, strong) NSString * imageHref;
-@property (nonatomic, strong) NSData * image;
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * content;
+@property (nonatomic, copy) NSString * imageHref;
+@property (nonatomic, copy) NSData * imageData;
 
--(void)updateFactWithDictionary : (NSDictionary *)dictionary;
--(void)requestImage;
+// update identical(title) object with dictionary
+- (void)updateWithDictionary : (NSDictionary *)dictionary;
 
 @end

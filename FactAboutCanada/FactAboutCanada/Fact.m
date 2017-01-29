@@ -11,7 +11,7 @@
 @implementation Fact
 
 #pragma mark - init object with dictionary
--(id)initWithDictionary:(NSDictionary *)dictionary{
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary{
     self = [super init];
     if (self) {
         if([dictionary valueForKey:@"title"]){
@@ -30,7 +30,7 @@
 }
 
 #pragma mark - update object's content and imageHref
--(void)updateFactWithDictionary:(NSDictionary *)dictionary{
+- (void)updateWithDictionary:(NSDictionary *)dictionary{
     if([dictionary valueForKey:@"description"] != [NSNull null] && ![self.content isEqualToString:[dictionary valueForKey:@"description"]]){
         self.content = [NSString stringWithFormat:@"%@", [dictionary valueForKey:@"description"]];
     }
@@ -40,33 +40,8 @@
     }
 }
 
-#pragma mark - if self has imageHref, request image with imageHref
--(void)requestImage{
-    NSURL * url = [NSURL URLWithString:self.imageHref];
-    NSURLRequest * request = [NSURLRequest requestWithURL:url
-                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                          timeoutInterval:30];
-    
-    NSURLSessionTask * task = [[NSURLSession sharedSession] downloadTaskWithRequest:request
-                                                                  completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error)
-    {
-        // 1. check if response has error
-        if(response && !error){
-            NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
-            if(httpResponse.statusCode == 200){
-                if(location){
-                    // 2. set object's image
-                    self.image = [[NSData alloc]initWithContentsOfURL:location];
-                }
-            }
-        }
-    }];
-    
-    [task resume];
-}
-
 #pragma mark - override NSObject function 'isEqual' to check if object has identical title
--(BOOL)isEqual:(id)object{
+- (BOOL)isEqual:(id)object{
     if([object isKindOfClass:[self class]]){
         Fact * obj = (Fact *)object;
         return [obj.title isEqual:self.title];

@@ -12,14 +12,13 @@
 @implementation WebserviceClient
 
 #pragma mark - request json objects
--(void)requestWithConnection:(NSString *)connection
+- (void)requestWithConnection:(NSString *)connection
            completionHandler:(void (^)(NSDictionary *))completionHandler{
     NSURL * url = [NSURL URLWithString:connection];
     NSURLRequest * request = [NSURLRequest requestWithURL:url];
     
     NSURLSessionTask * task = [[NSURLSession sharedSession] dataTaskWithRequest:request
-                                                              completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
-    {
+                                                              completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error){
         // handle http response
         // 1. check if request has error
         if(!error){
@@ -45,4 +44,32 @@
     [task resume];
 }
 
+#pragma mark - request image for object
+- (void)requestImageWithObject:(id)object{
+    if([object isMemberOfClass:[Fact class]]){
+        Fact * fact = (Fact *)object;
+        if (fact.imageHref){
+            NSURL * url = [NSURL URLWithString:fact.imageHref];
+            NSURLRequest * request = [NSURLRequest requestWithURL:url
+                                                      cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                  timeoutInterval:30];
+            
+            NSURLSessionTask * task = [[NSURLSession sharedSession] downloadTaskWithRequest:request
+                                                                          completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error){
+                                                                              // 1. check if response has error
+                                                                              if(response && !error){
+                                                                                  NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
+                                                                                  if(httpResponse.statusCode == 200){
+                                                                                      if(location){
+                                                                                          // 2. set object's image
+                                                                                          fact.imageData = [[NSData alloc]initWithContentsOfURL:location];
+                                                                                      }
+                                                                                  }
+                                                                              }
+                                                                          }];
+            
+            [task resume];
+        }
+    }
+}
 @end

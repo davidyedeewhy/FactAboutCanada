@@ -10,18 +10,14 @@
 #import "WebserviceClient.h"
 #import "Fact.h"
 
-#define WEBSERVICE_CONNECTION @"https://dl.dropboxusercontent.com/u/746330/facts.json"
-#define MAX_IMAGE_WIDTH 0.35 // max percent of imageview width
+static NSString * const WebserviceConnection = @"https://dl.dropboxusercontent.com/u/746330/facts.json";
+const CGFloat MaxImageWidthRatio = 0.35;
 
 @interface ViewController ()
-
-#pragma mark - properties
 @property (nonatomic, strong) NSMutableArray * facts;
-
 @end
 
 @implementation ViewController
-
 #pragma mark - view life circle
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -42,9 +38,10 @@
                   forControlEvents:UIControlEventValueChanged];
 }
 
--(void)requestWebservice{
+#pragma mark - functions
+- (void)requestWebservice{
     WebserviceClient * client = [[WebserviceClient alloc]init];
-    [client requestWithConnection:WEBSERVICE_CONNECTION completionHandler:^(NSDictionary *result) {
+    [client requestWithConnection:WebserviceConnection completionHandler:^(NSDictionary *result) {
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             if([result valueForKey:@"title"]){
@@ -66,7 +63,7 @@
                             [self.facts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                 if([[obj valueForKey:@"title"] isEqualToString:[dictionary valueForKey:@"title"]]){
                                     Fact * existObject = (Fact *)obj;
-                                    [existObject updateFactWithDictionary:dictionary];
+                                    [existObject updateWithDictionary:dictionary];
                                     *stop = YES;
                                 }
                             }];
@@ -86,99 +83,86 @@
 }
 
 #pragma mark - Tableview data source
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
 
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return _facts.count;
 }
 
 #pragma mark - Tableview delegates
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    
     Fact * fact = [self.facts objectAtIndex:indexPath.row];
-    CGFloat height = 0; //initalize return value 0
     
-    if(fact.image){
+    CGFloat height = 0;
+    CGFloat margin = [[UIScreen mainScreen] bounds].size.height < 667 ? 10 : 8;
+    
+    if(fact.imageData){
         // if object has image, layout image with title and content
-        // 1. add margin
-        height += cell.contentView.layoutMargins.top;
-        height += cell.contentView.layoutMargins.bottom;
+        height += margin * 2;
         
-        UIImage * image = [UIImage imageWithData:fact.image];
+        UIImage * image = [UIImage imageWithData:fact.imageData];
         
-        CGFloat imageWidth = 0; // set max image width
-        if (image.size.width > cell.contentView.frame.size.width * MAX_IMAGE_WIDTH){
-            // 2. if image width great than max width, using the max width
-            imageWidth = cell.contentView.frame.size.width * MAX_IMAGE_WIDTH;
+        // set max image width
+        // if image width great than max width, using the max width
+        // if image width less than max width, using the image width
+        CGFloat imageWidth = 0;
+        if (image.size.width > cell.contentView.frame.size.width * MaxImageWidthRatio){
+            imageWidth = cell.contentView.frame.size.width * MaxImageWidthRatio;
         }else{
-            // 3. if image width less than max width, using the image width
             imageWidth = image.size.width;
         }
 
         //1. calculate title height
         if(fact.title){
-            NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:17]};
-            CGRect rect = [fact.title boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - imageWidth - 48, CGFLOAT_MAX)
+            NSDictionary * titleAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:17]};
+            CGRect titleRect = [fact.title boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - imageWidth - 3 * margin, CGFLOAT_MAX)
                                                    options:NSStringDrawingUsesLineFragmentOrigin
-                                                attributes:attributes
+                                                attributes:titleAttributes
                                                    context:nil];
-            height += rect.size.height;
-            
-            // add margin
-            height += cell.textLabel.layoutMargins.top;
-            height += cell.textLabel.layoutMargins.bottom;
+            height += titleRect.size.height;
+            height += margin;
         }
         
         //2. calculate content height
         if(fact.content){
-            NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:12]};
-            CGRect rect = [fact.content boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - imageWidth - 48, CGFLOAT_MAX)
+            NSDictionary * contentAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:12]};
+            CGRect contentRect = [fact.content boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - imageWidth - 3 * margin, CGFLOAT_MAX)
                                                      options:NSStringDrawingUsesLineFragmentOrigin
-                                                  attributes:attributes
+                                                  attributes: contentAttributes
                                                      context:nil];
-            height += rect.size.height;
-            
-            // add margin
-            height += cell.detailTextLabel.layoutMargins.top;
-            height += cell.detailTextLabel.layoutMargins.bottom;
+            height += contentRect.size.height;
+            height += margin;
         }
     }else{
         //1. calculate title height
         if(fact.title){
-            NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:17]};
-            CGRect rect = [fact.title boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - 32, CGFLOAT_MAX)
+            NSDictionary *titleAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:17]};
+            CGRect titleRect = [fact.title boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - 2 * margin, CGFLOAT_MAX)
                                                    options:NSStringDrawingUsesLineFragmentOrigin
-                                                attributes:attributes
+                                                attributes:titleAttributes
                                                    context:nil];
-            height += rect.size.height;
+            height += titleRect.size.height;
+            height += margin * 2;
         }
         
         //2. calculate content height
         if(fact.content){
-            NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:12]};
-            CGRect rect = [fact.content boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - 32, CGFLOAT_MAX)
+            NSDictionary * contentAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:12]};
+            CGRect contentRect = [fact.content boundingRectWithSize:CGSizeMake(cell.contentView.frame.size.width - 3 * margin, CGFLOAT_MAX)
                                                      options:NSStringDrawingUsesLineFragmentOrigin
-                                                  attributes:attributes
+                                                  attributes: contentAttributes
                                                      context:nil];
-            height += rect.size.height;
-            
-            // add margin
-            height += cell.detailTextLabel.layoutMargins.top;
-            height += cell.detailTextLabel.layoutMargins.bottom;
+            height += contentRect.size.height;
+            height += margin;
         }
-        
-        // add margin
-        height += cell.contentView.layoutMargins.top;
-        height += cell.contentView.layoutMargins.bottom;
-        
     }
     return height;
 }
 
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     UITableViewCell * cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     Fact * fact = [self.facts objectAtIndex:indexPath.row];
@@ -191,15 +175,15 @@
         cell.detailTextLabel.text = fact.content;
     }
     
-    if(fact.image){
+    if(fact.imageData){
         // draw image in certain frame
-        UIImage * image = [UIImage imageWithData:fact.image];
+        UIImage * image = [UIImage imageWithData:fact.imageData];
         CGFloat imageWidth = 0;
         CGFloat imageHeight = 0;
-        if (image.size.width > cell.contentView.frame.size.width * MAX_IMAGE_WIDTH){
+        if (image.size.width > cell.contentView.frame.size.width * MaxImageWidthRatio){
             // if image's width is great than certain width, shrink it to max width
-            imageWidth = cell.contentView.frame.size.width * MAX_IMAGE_WIDTH;
-            imageHeight = (image.size.height * cell.contentView.frame.size.width * MAX_IMAGE_WIDTH) / image.size.width;
+            imageWidth = cell.contentView.frame.size.width * MaxImageWidthRatio;
+            imageHeight = (image.size.height * cell.contentView.frame.size.width * MaxImageWidthRatio) / image.size.width;
         }else{
             // else keep image's original size
             imageWidth = image.size.width;
@@ -217,16 +201,16 @@
                       options:NSKeyValueObservingOptionNew
                       context:nil];
             // request image with object's image url
-            [fact requestImage];
+            WebserviceClient * client = [[WebserviceClient alloc]init];
+            [client requestImageWithObject:fact];
         }];
     }
-
 
     return cell;
 }
 
-#pragma mark - observer for Fact object set image
--(void)observeValueForKeyPath:(NSString *)keyPath
+#pragma mark - NSKeyValueObserving. observer for Fact object set image
+- (void)observeValueForKeyPath:(NSString *)keyPath
                      ofObject:(id)object
                        change:(NSDictionary<NSKeyValueChangeKey,id> *)change
                       context:(void *)context{
@@ -240,7 +224,7 @@
         if(cell){
             dispatch_async(dispatch_get_main_queue(), ^(void){
                 //display image with animations
-                cell.imageView.image = [UIImage imageWithData:fact.image];
+                cell.imageView.image = [UIImage imageWithData:fact.imageData];
                 if([self.tableView.visibleCells containsObject:cell]){
                     // if cell's visible, reload the cell with image
                     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
