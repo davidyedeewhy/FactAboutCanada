@@ -97,7 +97,7 @@ const CGFloat MaxImageWidthRatio = 0.35;
     Fact * fact = [self.facts objectAtIndex:indexPath.row];
     
     CGFloat height = 0;
-    CGFloat margin = [[UIScreen mainScreen] bounds].size.height < 667 ? 10 : 8;
+    CGFloat margin = 10;//[[UIScreen mainScreen] bounds].size.height < 667 ? 10 : 8;
     
     if(fact.imageData){
         // if object has image, layout image with title and content
@@ -197,7 +197,7 @@ const CGFloat MaxImageWidthRatio = 0.35;
         
     }else if(fact.imageHref){
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [fact addObserver:self forKeyPath:@"image"
+            [fact addObserver:self forKeyPath:@"imageData"
                       options:NSKeyValueObservingOptionNew
                       context:nil];
             // request image with object's image url
@@ -209,12 +209,9 @@ const CGFloat MaxImageWidthRatio = 0.35;
     return cell;
 }
 
-#pragma mark - NSKeyValueObserving. observer for Fact object set image
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                     ofObject:(id)object
-                       change:(NSDictionary<NSKeyValueChangeKey,id> *)change
-                      context:(void *)context{
-    if ([object isMemberOfClass:[Fact class]] && [keyPath isEqualToString:@"image"]){
+#pragma mark - observer for Fact object set image
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    if ([object isMemberOfClass:[Fact class]] && [keyPath isEqualToString:@"imageData"]){
         Fact * fact = (Fact *)object;
         
         NSUInteger row = [self.facts indexOfObject:fact];
@@ -234,6 +231,7 @@ const CGFloat MaxImageWidthRatio = 0.35;
             });
         }
     }
+
 }
 
 @end
